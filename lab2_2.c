@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/time.h>
+#include <pthread.h>
 
 #define rows1 4
 #define columns1 5
@@ -9,26 +11,55 @@
 
 #define MAX_T 2
 
+struct data{
+	int **mtx1;
+	int **mtx2;
+	int **mtx3;
+	int start;
+	int r1;
+	int c1;
+	int c2;
+	int t;
+};
 
+void multiply(void* e){
+struct data *pack = (struct data *) e;
+int **mtx1 = pack->mtx1;
+int **mtx2 = pack->mtx2;
+int **mtx3 = pack->mtx3;
+int start = pack->start;
+int r1 = pack->r1;
+int c1 = pack->c1;
+int c2 = pack->c2;
+int t = pack->t;
 
-void multiply(int **matrx1, int **matrx2,int **matrx3,int z,int x, int v){
+for(int i = start; i < r1*c2; i +=t){
+	mtx3[i/c2][i%c2] = 0;
+	for(int j = 0;j<c1; j++){
+		mtx3[i/c2][i%c2] += mtx1[i/c2][j] * mtx2[j][i%c2];
+	}
+}
 
-
-for(int i=0;i<z;i++){
-	for(int o=0;o<v;o++)
+/*
+for(int i=0;i<rows1;i++){
+	for(int o=0;o<columns2;o++)
 		matrx3[i][o]=0;
 }
-for(int i=0;i<z;i++){
-	for(int o=0;o<v;o++){
-		for(int p=0;p<x;p++){
+for(int i=0;i<rows1;i++){
+	for(int o=0;o<columns2;o++){
+		for(int p=0;p<columns1;p++){
 			matrx3[i][o]+=matrx1[i][p]* matrx2[p][o];
 			}
 		}
 }
+*/
 }
 
-
 int main(){
+
+struct timeval s;
+struct timeval e;
+int rc;
 
 srand(time(NULL));
 
@@ -60,10 +91,47 @@ for(int i=0;i<rows2;i++){
 		M2[i][o]= rand() %6;
 }
 
+pthread_t threads[MAX_T];
+struct data pack[MAX_T];
+
+
+gettimeofday(&s,NULL);
+for(int i =0;i<MAX_T;i++){
+	pack[i].mtx1 = M1;
+	pack[i].mtx2 = M2;
+	pack[i].mtx3 = M3;
+	pack[i].start = i;
+	pack[i].r1 = rows1;
+	pack[i].c1 = columns1;
+	pack[i].c2 = columns2;
+	pack[i].t = MAX_T;
+
+	rc = pthread_create(threads + i, NULL, multiply,(void *)&pack[i]);
+
+	if (rc){
+		printf("ERROR, return code from pthread_create() is %d\n", rc);
+		exit(-1);
+	}
+}
+
+for(int i = 0; i< MAX_T;i++){
+	rc = pthread_join(threads[i],NULL);
+	if (rc){
+		printf("ERROR, return code from pthread_create() is %d\n", rc);
+		exit(-1);
+	}	
+}
+
+gettimeofday(&e,NULL);
+
+double time = (double)(e.tv_usec - s.tv_usec)/1000000.0;
+
+printf("%Lf\n",time);
+
 //impresion de matrices 1 y 2
 for(int i=0;i<rows1;i++){
-	printf("\n");
-	for(int o=0;o<columns2;o++)
+	printf("\n"); 
+	for(int o=0;o<columns1;o++)
 		printf("%d\t",M1[i][o]);
 }
 printf("\n\n");
@@ -76,7 +144,6 @@ for(int i=0;i<rows2;i++){
 printf("\n");
 //termina impresion de matrices
 
-multiply(M1,M2,M3,rows1,columns1,columns2);
 
 //impresion matriz resultante
 
