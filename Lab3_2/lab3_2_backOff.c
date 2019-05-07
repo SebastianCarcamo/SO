@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "atomic_ops.h"
 #include <pthread.h>
 #include "hrtimer_x86.c"
 
@@ -10,12 +11,9 @@ int vGlobal =0;
 
 void* sumar(void* s){	
 	for(int i=0;i<50000;i++){
-		if(tas(&lock)){
-			do{}
-			while(tas(&lock));
-		}
+		tatas_acquire_slowpath(&lock);
 		vGlobal++;
-		lock = 0;
+		tatas_release(&lock);
 	}
 }
 
