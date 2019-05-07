@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include "hrtimer_x86.c"
 
-#define THREADS_NUM 1
+#define THREADS_NUM 8
 
 volatile unsigned long lock = 0;
 int vGlobal =0;

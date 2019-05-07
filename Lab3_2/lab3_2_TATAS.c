@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <pthread.h>
 #include "hrtimer_x86.c"
+#include "atomic_ops.h"
 
-#define THREADS_NUM 1
+#define THREADS_NUM 8
 
 volatile unsigned long lock = 0;
 int vGlobal =0;

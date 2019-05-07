@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include "hrtimer_x86.c"
-#define THREAD_NUM 1
+#define THREAD_NUM 8
 
 int vGlobal = 0;
 pthread_mutex_t lock;

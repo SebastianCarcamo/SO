@@ -3,7 +3,7 @@
 #include "hrtimer_x86.c"
 #include <pthread.h>
 
-#define THREADS_NUM 4
+#define THREADS_NUM 8
 
 
 int vGlobal =0;
