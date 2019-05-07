@@ -2,7 +2,7 @@
 #include <pthread.h>
 #include "hrtimer_x86.c"
 
-#define THREAD_NUM 1
+#define THREAD_NUM 2
 #define TIMES 10
 
 pthread_barrier_t barrier;

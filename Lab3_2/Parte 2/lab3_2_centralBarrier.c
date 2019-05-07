@@ -2,8 +2,8 @@
 #include <pthread.h>
 #include "hrtimer_x86.c"
 
-#define THREAD_NUM 1
-#define TIMES 10
+#define THREAD_NUM 8
+#define TIMES 10000
 
 struct bar_type{
 	int counter_in;
